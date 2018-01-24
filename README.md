@@ -1,0 +1,1 @@
+This is my project to create a journaling web application using nodejs and express.
