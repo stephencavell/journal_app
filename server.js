@@ -5,31 +5,30 @@
 
 // =============================
 
-// call necessary packages
-var express = require('express');
-var app = express();
+//IMPORT EXPRESS AND CREATE EXPRESS APP//
+const express = require('express');
+const app = express();
 
-var bodyParser = require('body-parser');
-
-
-var mongoose = require('mongoose');
-var mongodb = 'mongodb://127.0.0.1:27017/'
-
-mongoose.connect(mongodb);
-
-var Person = require('./app/models/person');
-
-//configure app to use bodyParser()
-//this will let us get data from a POST
+//IMPORT BODYPARSER AND CONFIGURE APP TO USE IT//
+const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 
-//set port
-var port = process.env.PORT || 8080;
+//IMPORT MONGOOSE AND SET DATABASE CONNECTION//
+const mongoose = require('mongoose');
+const mongodb = 'mongodb://127.0.0.1:27017/journal'
+mongoose.connect(mongodb);
+
+//IMPORT ROUTES//
+const posts = require('./app/routes/posts-routes');
+
+//SET PORT//
+const port = process.env.PORT || 8080;
 
 // ROUTES
 //==============================
 
+/*
 //get an instance of router
 var router = express.Router();
 
@@ -47,35 +46,44 @@ router.get('/', function(req, res) {
 
 //more api routes to come
 
-//on routes that end in people
-router.route('/people')
+router.route('/posts')
 
-	//create a person (accessed at POST http://localhost:8080/api/people)
+	//route for saving new post
 	.post(function(req, res) {
+		//create post object
+		let post = new Post();
+		//assign data from req
+		post.author = req.body.author;
+		post.date = req.body.date;
+		post.entry = req.body.entry;
 
-		var person = new Person();
-		person.name = req.body.name;
-
-		//save the person and check for errors
-		person.save(function(err) {
+		//save the post
+		post.save(function(err) {
 			if(err)
 				res.send(err);
-
-			res.json({message: 'Person Created!'});
+			res.json({message: 'Post Created'});
 		});
-	})
 
-	//retrieve all persons (accessed at GET http://localhost:8080/api/people)
+	})
+	//route for retrieving list of all posts
 	.get(function(req, res) {
-		Person.find(function(err, persons) {
-			if (err) 
+		//retrieve all posts
+		Post.find(function(err, posts) {
+			if(err)
 				res.send(err);
-			res.json(persons);
+			res.json(posts);
 		});
 	});
 
+//router for specific id
+router.route('/posts/:post_id')
+
+	.put(function(req, res) {
+
+	});
+*/
 //register our routes,they will be prefixed with /api
-app.use('/api', router);
+app.use('/', posts);
 
 // START THE SERVER
 //=============================

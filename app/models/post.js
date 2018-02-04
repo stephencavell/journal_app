@@ -7,13 +7,14 @@ var Schema = mongoose.Schema;
 
 var PostSchema = new Schema({
 	author: String,
-	body: String,
+	date: Date,
+	entry: String,
 
 });
 
 //virtual for easy post url retrieval
 PostSchema.virtual('url').get(function () {
-	return '/entries/' + this._id;
+	return '/posts/' + this._id;
 });
 
 //Export module
